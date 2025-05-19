@@ -11,37 +11,53 @@ pragma solidity ^0.8.0;
 
 contract Twitter {
 
+    /* initialization */
     uint16 public MAX_TWEET_LENGTH = 280;
+    address public owner;
 
-    struct Tweet {
+    // definitions
+    // define constructor
+    constructor() {
+        owner = msg.sender;
+    }
+
+    // define our struct
+    struct tweet{
         uint256 id;
         address author;
         string content;
         uint256 timestamp;
         uint256 likes;
-    }
-    mapping(address => Tweet[] ) public tweets;
-    address public owner;
 
-    // Define the events here 👇
-
-    constructor() {
-        owner = msg.sender;
     }
 
+    // define mapping
+    mapping(address => tweet[]) public tweets;
+
+    // define modifier
     modifier onlyOwner() {
-        require(msg.sender == owner, "YOU ARE NOT THE OWNER!");
+        require(msg.sender == owner, "You're not the owner");
         _;
     }
 
-    function changeTweetLength(uint16 newTweetLength) public onlyOwner {
-        MAX_TWEET_LENGTH = newTweetLength;
-    }
+    // define events
+    event tweetCreated(uint256 id, address author, string content, uint256 timestamp);
+    event tweetLiked(address liker, address author, uint256 id, uint256 likes);
+    event tweetUnliked(address unliker, address author, uint256 id, uint256 likes);
+
+    /* end of initialization */
+
+
+
+    // main
 
     function createTweet(string memory _tweet) public {
-        require(bytes(_tweet).length <= MAX_TWEET_LENGTH, "Tweet is too long bro!" );
+        // conditional
+        // if tweet length <= MAX_TWEET_LENGTH continue, else, revert
+        require(bytes(_tweet).length <= MAX_TWEET_LENGTH, "Tweet too long");
 
-        Tweet memory newTweet = Tweet({
+
+        tweet memory newTweet = tweet({
             id: tweets[msg.sender].length,
             author: msg.sender,
             content: _tweet,
@@ -50,28 +66,40 @@ contract Twitter {
         });
 
         tweets[msg.sender].push(newTweet);
+
+        emit tweetCreated(newTweet.id, newTweet.author, newTweet.content, newTweet.timestamp);
+
     }
 
-    function likeTweet(address author, uint256 id) external {  
-        require(tweets[author][id].id == id, "TWEET DOES NOT EXIST");
-
+    function likeTweet(address author, uint256 id) external {
+        require(tweets[author][id].id == id, "tweet unavailable");
         tweets[author][id].likes++;
+
+        emit tweetLiked(msg.sender, author, id, tweets[author][id].likes);
 
     }
 
     function unlikeTweet(address author, uint256 id) external {
-        require(tweets[author][id].id == id, "TWEET DOES NOT EXIST");
-        require(tweets[author][id].likes > 0, "TWEET HAS NO LIKES");
-        
+        require(tweets[author][id].id == id, "tweet unavailable");
+        require(tweets[author][id].likes > 0, "Likes already 0");
         tweets[author][id].likes--;
+
+        emit tweetLiked(msg.sender, author, id, tweets[author][id].likes);
+
     }
 
-    function getTweet( uint _i) public view returns (Tweet memory) {
+    function getTweet(uint _i) public view returns (tweet memory){
         return tweets[msg.sender][_i];
+
     }
 
-    function getAllTweets(address _owner) public view returns (Tweet[] memory ){
+    function getAllTweets(address _owner) public view returns (tweet[] memory){
         return tweets[_owner];
+
+    }
+
+    function changeTweetLength(uint16 newTweetLength) public onlyOwner{
+        MAX_TWEET_LENGTH = newTweetLength;
     }
 
 }
