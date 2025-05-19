@@ -3,10 +3,11 @@
 pragma solidity ^0.8.0;
 
 contract EventExample {
-    // 1️⃣ Add an event called "NewUserRegistered" with 2 arguments
+    // 1️⃣ Add an event called "newUserRegistered" with 2 arguments
     // 👉 user as address type
     // 👉 username as string type
     // CODE HERE 👇
+    event newUserRegistered(address indexed user, string username);
     
     struct User {
         string username;
@@ -22,6 +23,7 @@ contract EventExample {
         
         // 2️⃣ Emit the event with msg.sender and username as the inputs
         // CODE HERE 👇
+        emit newUserRegistered(msg.sender, _username);
 
     }
 }

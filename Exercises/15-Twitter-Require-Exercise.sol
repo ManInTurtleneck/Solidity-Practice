@@ -15,6 +15,7 @@ contract Twitter {
         string content;
         uint256 timestamp;
         uint256 likes;
+        
     }
 
     // add our code
