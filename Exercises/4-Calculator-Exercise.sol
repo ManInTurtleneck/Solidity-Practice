@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: MIT
+// Django Schmidt
+// Fork of https://github.com/NazaWEb/ultimate-solidity-course-for-complete-beginners
 
 pragma solidity ^0.8.0;
 
@@ -8,6 +10,34 @@ pragma solidity ^0.8.0;
 // 4️⃣ Create a function to get result
 
 contract Calculator {
-    uint256 public result;
+
+    uint256 public result = 0;
+
+    function add(uint256 num) public{
+        result += num;
+
+    }
+
+    function subtract(uint256 num) public{
+        result -= num;
+
+    }
+
+    function multiply(uint256 num) public{
+        result *= num;
+
+    }
+
+    function get() public view returns (uint256){
+        return result;
+
+    }
+
+    // Extra
+
+    function reset() public{
+        result = 0;
+
+    }
 
 }
